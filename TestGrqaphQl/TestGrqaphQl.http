@@ -1,0 +1,6 @@
+@TestGrqaphQl_HostAddress = http://localhost:5174
+
+GET {{TestGrqaphQl_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
