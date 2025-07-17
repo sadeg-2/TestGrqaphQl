@@ -1,0 +1,168 @@
+schema {
+  query: Query
+  mutation: Mutation
+}
+
+type Query {
+  books("Returns the first _n_ elements from the list." first: Int "Returns the elements in the list that come after the specified cursor." after: String "Returns the last _n_ elements from the list." last: Int "Returns the elements in the list that come before the specified cursor." before: String where: BookFilterInput order: [BookSortInput!]): BooksConnection
+  authors("Returns the first _n_ elements from the list." first: Int "Returns the elements in the list that come after the specified cursor." after: String "Returns the last _n_ elements from the list." last: Int "Returns the elements in the list that come before the specified cursor." before: String where: AuthorFilterInput order: [AuthorSortInput!]): AuthorsConnection
+}
+
+type Mutation {
+  updateBook(input: BookInput!): Book!
+  addAuthor(name: String!): Author!
+  addBook(title: String! authorId: Int!): Book!
+}
+
+input BookFilterInput {
+  and: [BookFilterInput!]
+  or: [BookFilterInput!]
+  id: IntOperationFilterInput
+  title: StringOperationFilterInput
+  authorId: IntOperationFilterInput
+  author: AuthorFilterInput
+}
+
+input BookSortInput {
+  id: SortEnumType
+  title: SortEnumType
+  authorId: SortEnumType
+  author: AuthorSortInput
+}
+
+input AuthorFilterInput {
+  and: [AuthorFilterInput!]
+  or: [AuthorFilterInput!]
+  id: IntOperationFilterInput
+  name: StringOperationFilterInput
+  books: ListFilterInputTypeOfBookFilterInput
+}
+
+input AuthorSortInput {
+  id: SortEnumType
+  name: SortEnumType
+}
+
+"A connection to a list of items."
+type BooksConnection {
+  "Information to aid in pagination."
+  pageInfo: PageInfo!
+  "A list of edges."
+  edges: [BooksEdge!]
+  "A flattened list of the nodes."
+  nodes: [Book!]
+  "Identifies the total count of items in the connection."
+  totalCount: Int!
+}
+
+"A connection to a list of items."
+type AuthorsConnection {
+  "Information to aid in pagination."
+  pageInfo: PageInfo!
+  "A list of edges."
+  edges: [AuthorsEdge!]
+  "A flattened list of the nodes."
+  nodes: [Author!]
+}
+
+input IntOperationFilterInput {
+  eq: Int
+  neq: Int
+  in: [Int]
+  nin: [Int]
+  gt: Int
+  ngt: Int
+  gte: Int
+  ngte: Int
+  lt: Int
+  nlt: Int
+  lte: Int
+  nlte: Int
+}
+
+input StringOperationFilterInput {
+  and: [StringOperationFilterInput!]
+  or: [StringOperationFilterInput!]
+  eq: String
+  neq: String
+  contains: String
+  ncontains: String
+  in: [String]
+  nin: [String]
+  startsWith: String
+  nstartsWith: String
+  endsWith: String
+  nendsWith: String
+}
+
+enum SortEnumType {
+  ASC
+  DESC
+}
+
+input ListFilterInputTypeOfBookFilterInput {
+  all: BookFilterInput
+  none: BookFilterInput
+  some: BookFilterInput
+  any: Boolean
+}
+
+"Information about pagination in a connection."
+type PageInfo {
+  "Indicates whether more edges exist following the set defined by the clients arguments."
+  hasNextPage: Boolean!
+  "Indicates whether more edges exist prior the set defined by the clients arguments."
+  hasPreviousPage: Boolean!
+  "When paginating backwards, the cursor to continue."
+  startCursor: String
+  "When paginating forwards, the cursor to continue."
+  endCursor: String
+}
+
+"An edge in a connection."
+type BooksEdge {
+  "A cursor for use in pagination."
+  cursor: String!
+  "The item at the end of the edge."
+  node: Book!
+}
+
+"An edge in a connection."
+type AuthorsEdge {
+  "A cursor for use in pagination."
+  cursor: String!
+  "The item at the end of the edge."
+  node: Author!
+}
+
+type Author {
+  id: Int!
+  name: String
+  books: [Book!]
+}
+
+input BookInput {
+  id: Int!
+  title: String
+  authorId: Int!
+  author: AuthorInput
+}
+
+type Book {
+  id: Int!
+  title: String
+  authorId: Int!
+  author: Author
+}
+
+input AuthorInput {
+  id: Int!
+  name: String
+  books: [BookInput!]
+}
+
+"The purpose of the `cost` directive is to define a `weight` for GraphQL types, fields, and arguments. Static analysis can use these weights when calculating the overall cost of a query or response."
+directive @cost("The `weight` argument defines what value to add to the overall cost for every appearance, or possible appearance, of a type, field, argument, etc." weight: String!) on SCALAR | OBJECT | FIELD_DEFINITION | ARGUMENT_DEFINITION | ENUM | INPUT_FIELD_DEFINITION
+
+"The purpose of the `@listSize` directive is to either inform the static analysis about the size of returned lists (if that information is statically available), or to point the analysis to where to find that information."
+directive @listSize("The `assumedSize` argument can be used to statically define the maximum length of a list returned by a field." assumedSize: Int "The `slicingArguments` argument can be used to define which of the field's arguments with numeric type are slicing arguments, so that their value determines the size of the list returned by that field. It may specify a list of multiple slicing arguments." slicingArguments: [String!] "The `slicingArgumentDefaultValue` argument can be used to define a default value for a slicing argument, which is used if the argument is not present in a query." slicingArgumentDefaultValue: Int "The `sizedFields` argument can be used to define that the value of the `assumedSize` argument or of a slicing argument does not affect the size of a list returned by a field itself, but that of a list returned by one of its sub-fields." sizedFields: [String!] "The `requireOneSlicingArgument` argument can be used to inform the static analysis that it should expect that exactly one of the defined slicing arguments is present in a query. If that is not the case (i.e., if none or multiple slicing arguments are present), the static analysis may throw an error." requireOneSlicingArgument: Boolean! = true) on FIELD_DEFINITION

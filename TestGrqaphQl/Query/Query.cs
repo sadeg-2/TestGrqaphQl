@@ -7,7 +7,7 @@ namespace TestGrqaphQl.Query
 {
     public class Query
     {
-        [UsePaging]
+        [UsePaging(IncludeTotalCount = true)]
         [UseFiltering]
         [UseSorting]
         public IQueryable<Book> GetBooks([Service] AppDbContext context) =>
